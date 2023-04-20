@@ -109,4 +109,4 @@ async def on_message(message):
 
 
 # start the Discord bot
-client.run("OTE0MzYyMjE1OTU0NTQ2NzQ4.GDZu-G.4OJnBypG8kVUHcfzyeW3QyP7VAGFNQj8hTTims", log_handler=None)
+client.run("OTE0MzYyMjE1OTU0NTQ2NzQ4.GDZu-G.4OJnBypG8kVUHcfzyeW3QyP7VAGFNQj8hTTims")
