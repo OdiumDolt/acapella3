@@ -12,6 +12,7 @@ players = {}
 # define the bot command
 @client.event
 async def on_message(message):
+    print(message.content)
   # check if the message is from the bot or not
     if message.author == client.user:
         return
