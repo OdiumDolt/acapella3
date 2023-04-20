@@ -68,7 +68,7 @@ class player:
     async def play(self):
         self.is_playing = True
         print(self.current_queue[0].title)
-        ffmpeg_opts = {"executable": "C:/Users/aweso/Desktop/Other/yt-dlp/ffmpeg.exe", "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"}
+        ffmpeg_opts = {"before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"}
         source = await discord.FFmpegOpusAudio.from_probe(self.current_queue[0].i_url, **ffmpeg_opts)
         self.voice_channel.play(source, after= lambda e:asyncio.run_coroutine_threadsafe(self.play_next(), self.voice_channel.loop))
 
