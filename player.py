@@ -22,11 +22,9 @@ class player:
         got_from = "url"
         
         if self.is_url(url) == None:
-            print("we searching")
             url = self.get_url_from_search(url)
             print_url = True
             got_from = "search"
-
         # Use yt_dlp to extract the youtube videos information.
         ytdlp_opts = {'format': 'bestaudio/best', 'noplaylist':'False'}
         with yt_dlp.YoutubeDL(ytdlp_opts) as ytdl:
@@ -67,7 +65,6 @@ class player:
 
     async def play(self):
         self.is_playing = True
-        print(self.current_queue[0].title)
         ffmpeg_opts = {"before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"}
         source = await discord.FFmpegOpusAudio.from_probe(self.current_queue[0].i_url, **ffmpeg_opts)
         self.voice_channel.play(source, after= lambda e:asyncio.run_coroutine_threadsafe(self.play_next(), self.voice_channel.loop))
@@ -77,9 +74,8 @@ class player:
             return
         
         engine = pyttsx3.init()
-        
         engine.setProperty('rate', 133) 
-        engine.save_to_file(message.content, 'speech.mp3')
+        engine.save_to_file(message.content, './speech.mp3')
         engine.runAndWait()
         
         source = await discord.FFmpegOpusAudio.from_probe('speech.mp3')

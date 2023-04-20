@@ -12,7 +12,6 @@ players = {}
 # define the bot command
 @client.event
 async def on_message(message):
-    print(message.content)
   # check if the message is from the bot or not
     if message.author == client.user:
         return
@@ -20,7 +19,6 @@ async def on_message(message):
     if message.content[0:len("!p")] == "!p":
     # get the URL of the video from the command
         search_query = message.content[len("!p "):]
-
     # # create a voice client
         try:
             queue_item = players[message.guild.id].add_to_queue(search_query)
@@ -28,7 +26,7 @@ async def on_message(message):
         except KeyError:
             voice_channel = message.author.voice.channel
             vc = await voice_channel.connect()
-            players[message.guild.id] = player(client.voice_clients[-1])
+            players[message.guild.id] = player(vc)
             queue_item = players[message.guild.id].add_to_queue(search_query)
 
         if queue_item.print_url:
@@ -80,7 +78,6 @@ async def on_message(message):
     
     if message.content[0:len("!q")] == "!q":
         try:
-            print("oh yeah yeah")
             response = "Current items in queue: 📋\n"
             for item in players[message.guild.id].current_queue:
                 response += item.title + "\n" 
@@ -91,7 +88,7 @@ async def on_message(message):
     if message.content[0:len("!ai")] == "!ai":
         message.content = message.content[len("!ai"):]
         
-        if len(message.content > 1500):
+        if len(message.content) > 1500:
             await message.channel.send("That message is too big cuh.")
             return
         
@@ -103,10 +100,10 @@ async def on_message(message):
             
             voice_channel = message.author.voice.channel
             vc = await voice_channel.connect()
-            players[message.guild.id] = player(client.voice_clients[-1])
+            players[message.guild.id] = player(vc)
             
             await players[message.guild.id].play_ai(message)
 
 
 # start the Discord bot
-client.run("OTE0MzYyMjE1OTU0NTQ2NzQ4.GDZu-G.4OJnBypG8kVUHcfzyeW3QyP7VAGFNQj8hTTims")
+client.run("", log_handler=None)

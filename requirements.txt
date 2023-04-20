@@ -1,4 +1,3 @@
 discord
 pyttsx3
 yt_dlp
-re
