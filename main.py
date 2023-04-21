@@ -1,6 +1,6 @@
 import discord
 from player import player
-
+import json
 
 # create a Discord client instance
 intents = discord.Intents.all()
@@ -8,6 +8,11 @@ intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 players = {}
 
+ENVIRON = "PROD"
+with open('token.json', "r") as read_file:
+    file = json.load(read_file)
+
+TOKEN = file[ENVIRON]
 
 # define the bot command
 @client.event
@@ -105,5 +110,6 @@ async def on_message(message):
             await players[message.guild.id].play_ai(message)
 
 
+
 # start the Discord bot
-client.run("", log_handler=None)
+client.run(TOKEN, log_handler=None)
