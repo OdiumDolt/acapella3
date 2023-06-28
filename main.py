@@ -110,6 +110,6 @@ async def on_message(message):
             await players[message.guild.id].play_ai(message)
 
 
-
+# print(' to ')
 # start the Discord bot
-client.run(TOKEN, log_handler=None)
+client.run(TOKEN)
