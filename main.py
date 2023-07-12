@@ -6,9 +6,9 @@ import json
 intents = discord.Intents.all()
 # intents.members = True
 client = discord.Client(intents=intents)
-players = {}
+players: dict[str, player] = {}
 
-ENVIRON = "PROD"
+ENVIRON = "DEV"
 with open('token.json', "r") as read_file:
     file = json.load(read_file)
 
@@ -16,30 +16,35 @@ TOKEN = file[ENVIRON]
 
 # define the bot command
 @client.event
-async def on_message(message):
-  # check if the message is from the bot or not
+async def on_message(message: discord.message.Message):
+    # check if the message is from the bot or not
     if message.author == client.user:
         return
-  # check if the message has a valid command
+    
+    # check if the message has a valid command
     if message.content[0:len("!p")] == "!p":
     # get the URL of the video from the command
         search_query = message.content[len("!p "):]
-    # # create a voice client
+         # # create a voice client
         try:
             queue_item = players[message.guild.id].add_to_queue(search_query)
 
         except KeyError:
             voice_channel = message.author.voice.channel
             vc = await voice_channel.connect()
-            players[message.guild.id] = player(vc)
-            queue_item = players[message.guild.id].add_to_queue(search_query)
+            
+            if type(vc) == discord.VoiceClient:
+                players[message.guild.id] = player(vc)
+                queue_item = players[message.guild.id].add_to_queue(search_query)
+            else:
+                message.channel.send(':rage: Unable to join VC :rage:')
 
         if queue_item.print_url:
             await message.channel.send("🎶 " + queue_item.title + " was added to the queue.\n" + queue_item.url)
         else:
             await message.channel.send("🎶 " + queue_item.title + " was added to queue.")
         
-        if players[message.guild.id].is_playing != True:
+        if players[message.guild.id].is_playing == False:
             await players[message.guild.id].play()
 
 
@@ -109,7 +114,5 @@ async def on_message(message):
             
             await players[message.guild.id].play_ai(message)
 
-
-print('---- BIIIIG PLAYING TIME ----')
 # start the Discord bot
 client.run(TOKEN)

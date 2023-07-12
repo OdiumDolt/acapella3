@@ -5,6 +5,8 @@ import urllib
 import asyncio
 import pyttsx3
 import os
+import time
+
 
 class player:
     def __init__(self, voice_channel) -> None:
@@ -13,7 +15,7 @@ class player:
         self.voice_channel = voice_channel
         self.connected_guild = None
         self.is_playing = False
-   
+        self.last_play = None
    
     """
     Uses yt_dlp to extract data from youtube, specificly the stream_url (i_url),
@@ -35,6 +37,7 @@ class player:
         ytdlp_opts = {'format': 'bestaudio/best', 'noplaylist':'False'}
         with yt_dlp.YoutubeDL(ytdlp_opts) as ytdl:
             info = ytdl.extract_info(url, download=False)
+            print(info['lenght'])
             stream_url = info["url"]
             stream_title = info['fulltitle']
             
@@ -96,6 +99,7 @@ class player:
     """
     async def play(self):
         self.is_playing = True
+        self.last_play = time.time()
         ffmpeg_opts = {"before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"}
         source = await discord.FFmpegOpusAudio.from_probe(self.current_queue[0].i_url, **ffmpeg_opts)
         self.voice_channel.play(source, after= lambda e:asyncio.run_coroutine_threadsafe(self.play_next(), self.voice_channel.loop))
