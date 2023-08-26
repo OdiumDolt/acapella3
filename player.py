@@ -9,7 +9,7 @@ import time
 
 
 class player:
-    def __init__(self, voice_channel) -> None:
+    def __init__(self, voice_channel: discord.VoiceClient) -> None:
         self.current_queue = []
         self.current_playing_thread = None
         self.voice_channel = voice_channel
@@ -37,7 +37,6 @@ class player:
         ytdlp_opts = {'format': 'bestaudio/best', 'noplaylist':'False'}
         with yt_dlp.YoutubeDL(ytdlp_opts) as ytdl:
             info = ytdl.extract_info(url, download=False)
-            print(info['lenght'])
             stream_url = info["url"]
             stream_title = info['fulltitle']
             
@@ -75,7 +74,7 @@ class player:
     Using self.voice_channel.stop() triggers the after callback found in self.play().
     This then triggers play_next, which pops the current_queue, and triggers self.play again()
     """
-    async def skip(self):
+    def skip(self):
         self.voice_channel.stop()
     
 

@@ -1,7 +1,4 @@
-import inspect
-
-
-class Router():
+class CMDRouter():
     def __init__(
             self, 
             var_keyword = '__var__',
@@ -11,40 +8,49 @@ class Router():
         self.var_keyword = var_keyword
         self.commands = commands
     
-    def command(self, path):
-        def add_func(command):
-            path = path.split(' ')
-            self.add_command(path, self.commands)
-            return command
+    def __add_command(self, path, commands, final_func):
+        print(path)
+        if path[0] in commands:
+            self.__add_command(path[:1], commands[path[0]], final_func)
         
-        return add_func  
-    
-    def add_command(self, path, command):
-        try:
-            if path[0] in command:
-                self.add_command(path[:1], command[:1 ])
-        except IndexError:
-            pass
+        elif path[0] not in commands:
+            if len(path) == 1:
+                commands[path[0]] = final_func
+                return commands
+            else:
+                commands[path[0]] = {}
+                return self.__add_command(path[1:], commands[path[0]], final_func)
+            
 
+    def command(self, path):
+        path = path.split(' ')
+        def add_func(func):
+            self.__add_command(path, self.commands, func)
+            return func
         
+        return add_func
 
     def find(self, command):
-        return self.find_function(command.split(' '), self.commands)
+        return self.__find_function(command.split(' '), self.commands)
 
-    def find_function(self, command, tree):
+    def __find_function(self, command, tree):
         args = ()
         try:
-            if inspect.ismethod(tree):
+            if callable(tree):
+                if len(command) > 0:
+                    args += tuple([' '.join(command)])
                 return tree, args
-            elif type(tree[command[0]]) == dict:
+            
+            elif type(tree) == dict:
                 tree = tree[command[0]]
-                tree, new_args = self.find_function(command[1:], tree)
+                tree, new_args = self.__find_function(command[1:], tree)
                 args += new_args
                 return tree, args
-        except KeyError as e:
+        
+        except KeyError or IndexError as e:
             if self.var_keyword in tree:
                 args += tuple([command[0]])
-                tree, new_args = self.find_function(command[1:], tree[self.var_keyword])
+                tree, new_args = self.__find_function(command[1:], tree[self.var_keyword])
                 args += new_args
                 return tree, args
             else:
@@ -52,3 +58,4 @@ class Router():
             
                
 
+router = CMDRouter()
