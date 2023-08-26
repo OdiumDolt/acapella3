@@ -10,7 +10,7 @@ import time
 
 class player:
     def __init__(self, voice_channel: discord.VoiceClient) -> None:
-        self.current_queue = []
+        self.current_queue: list[queue_item] = []
         self.current_playing_thread = None
         self.voice_channel = voice_channel
         self.connected_guild = None
