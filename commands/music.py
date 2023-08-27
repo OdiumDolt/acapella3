@@ -32,6 +32,23 @@ async def play(var, message: Message):
     if players[message.guild.id].is_playing == False:
         await players[message.guild.id].play()
     
+@router.command("!q")
+async def queue(var, message: Message):
+    try:
+        current_player = players[message.guild.id]
+    except KeyError:
+        await message.channel.send('Not yet in a channel :sob:')
+        return 
+    response = ""
+    for queue in range(len(current_player.current_queue)):
+        if queue == 0:
+            response += "🎶 " + current_player.current_queue[queue].title + "\n"
+            continue
+        response += current_player.current_queue[queue].title + "\n"
+        
+    await message.channel.send(response)
+            
+
 @router.command('!l')
 async def leave(var, message: Message):
     try:
@@ -39,7 +56,7 @@ async def leave(var, message: Message):
         del players[message.guild.id]
     
     except KeyError:
-        await message.channel.send("Dipshit im not even in a channel yet.")
+        await message.channel.send("Not yet in a channel :sob:")
 
 
 @router.command("!pause")
@@ -49,7 +66,7 @@ async def pause(var, message: Message):
             players[message.guild.id].voice_channel.pause()
         
         except KeyError:
-            await message.channel.send("Dipshit im not even in a channel yet.")
+            await message.channel.send("Not yet in a channel :sob:")
 
 
 @router.command('!resume')
@@ -59,7 +76,7 @@ async def resume(var, message: Message):
             players[message.guild.id].voice_channel.resume()
         
         except KeyError:
-            await message.channel.send("Dipshit im not even in a channel yet.")
+            await message.channel.send("Not yet in a channel :sob:")
 
 @router.command("!s")
 async def skip(var, message: Message):
@@ -70,13 +87,11 @@ async def skip(var, message: Message):
         index = 0
 
     try:
-        response = "Skipped ⏭️"
+        response = "Skipped ⏭️\n"
         if len(players[message.guild.id].current_queue) - 1 > 0:
-
             response += "🎶 NOW PLAYING: " + players[message.guild.id].current_queue[1].title
-            await message.channel.send(response)
         await message.channel.send(response)
         players[message.guild.id].skip()
 
     except KeyError:
-        await message.channel.send("Dipshit im not even in a channel yet.")
+        await message.channel.send("Not yet in a channel :sob:")
