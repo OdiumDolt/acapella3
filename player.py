@@ -57,8 +57,10 @@ class player:
         url_or_term = query.replace(" ", "+")
 
         html = urllib.request.urlopen("https://www.youtube.com/results?search_query=" + url_or_term)
-        video_ids = re.findall(r"watch\?v=(\S{11})", html.read().decode())
-        url = "https://www.youtube.com/watch?v=" + video_ids[0]
+        html = html.read().decode()
+        video_ids = re.findall(r'watch\?v=[a-zA-Z0-9_-]{11}\\u\d+pp=.{1,15}",', html)
+        video_ids = re.findall(r'watch\?v=[a-zA-Z0-9_-]{11}', video_ids[0])
+        url = "https://www.youtube.com/" + video_ids[0]
         
         return url
 
