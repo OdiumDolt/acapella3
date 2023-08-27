@@ -3,7 +3,7 @@ from player import player
 import json
 import router
 import commands.music
-ENVIRON = "DEV"
+ENVIRON = "PROD"
 
 # create a Discord client instance
 intents = discord.Intents.all()
