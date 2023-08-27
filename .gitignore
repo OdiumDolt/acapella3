@@ -4,4 +4,5 @@ __pycache__
 /.vscode
 .vscode
 .vscode/
-# token.json
+token.json
+compose.yml

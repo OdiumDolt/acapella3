@@ -1,22 +1,14 @@
 import discord
-from player import player
-import json
 import router
 import commands.music
-ENVIRON = "PROD"
+import os
+
+TOKEN = os.getenv('DISCORD')
 
 # create a Discord client instance
 intents = discord.Intents.all()
-# intents.members = True
+intents.members = True
 client = discord.Client(intents=intents)
-players: dict[str, player] = {}
-
-
-with open('token.json', "r") as read_file:
-    file = json.load(read_file)
-
-TOKEN = file[ENVIRON]
-
 
 # define the bot command
 @client.event
