@@ -70,11 +70,12 @@ async def skip(var, message: Message):
         index = 0
 
     try:
-
+        response = "Skipped ⏭️"
         if len(players[message.guild.id].current_queue) - 1 > 0:
-            response = "🎶 NOW PLAYING: " + players[message.guild.id].current_queue[1].title
+
+            response += "🎶 NOW PLAYING: " + players[message.guild.id].current_queue[1].title
             await message.channel.send(response)
-        
+        await message.channel.send(response)
         players[message.guild.id].skip()
 
     except KeyError:
