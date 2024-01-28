@@ -3,7 +3,7 @@ import router
 import commands.music
 import os
 TOKEN = os.getenv('DISCORD')
-print(TOKEN)
+
 # create a Discord client instance
 intents = discord.Intents.all()
 intents.members = True
