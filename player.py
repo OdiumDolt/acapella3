@@ -1,4 +1,6 @@
+from io import BufferedIOBase
 import re
+from typing import IO, Optional, Union
 import yt_dlp
 import discord
 import urllib
@@ -6,6 +8,33 @@ import asyncio
 import pyttsx3
 import os
 import time
+
+class queue_item:
+    def __init__(self, url, title, duration, print_url, got_from, i_url) -> None:
+        self.url = url
+        self.title = title
+        self.print_url = print_url
+        self.got_from = got_from
+        self.i_url = i_url
+        self.duration = duration
+
+class AudioSourceTracked(discord.FFmpegOpusAudio):
+    def __init__(self, source: queue_item, *, bitrate: int | None = None, codec: str | None = None, executable: str = 'ffmpeg', pipe: bool = False, stderr: IO[bytes] | None = None, before_options: str | None = None, options: str | None = None) -> None:
+        super().__init__(source.i_url, bitrate=bitrate, codec=codec, executable=executable, pipe=pipe, stderr=stderr, before_options=before_options, options=options)
+        self.duration = source.duration
+        self.count_20ms = 0
+
+    def read(self) -> bytes:
+        
+        data = next(self._packet_iter, b'')
+        if data:
+            self.count_20ms += 1
+        return data
+    
+    @property
+    def progress(self) -> float:
+        return round(self.count_20ms * 0.02)
+    
 
 
 class player:
@@ -37,12 +66,13 @@ class player:
         ytdlp_opts = {'format': 'bestaudio/best', 'noplaylist':'False'}
         with yt_dlp.YoutubeDL(ytdlp_opts) as ytdl:
             info = ytdl.extract_info(url, download=False)
+            duration = round(info['duration'])
             stream_url = info["url"]
             stream_title = info['fulltitle']
             
 
         # create the new queue_item object
-        new_queue = queue_item(url, stream_title, print_url, got_from, stream_url)
+        new_queue = queue_item(url, stream_title, duration, print_url, got_from, stream_url)
 
         self.current_queue.append(new_queue)
 
@@ -102,7 +132,7 @@ class player:
         self.is_playing = True
         self.last_play = time.time()
         ffmpeg_opts = {"before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"}
-        source = await discord.FFmpegOpusAudio.from_probe(self.current_queue[0].i_url, **ffmpeg_opts)
+        source = await AudioSourceTracked.from_probe(self.current_queue[0], **ffmpeg_opts)
         self.voice_channel.play(source, after= lambda e:asyncio.run_coroutine_threadsafe(self.play_next(), self.voice_channel.loop))
 
 
@@ -126,10 +156,3 @@ class player:
         self.voice_channel.play(source, after=lambda e: os.remove("./" + str(message.guild.id) + '_speech.mp3'))
 
 
-class queue_item:
-    def __init__(self, url, title, print_url, got_from, i_url) -> None:
-        self.url = url
-        self.title = title
-        self.print_url = print_url
-        self.got_from = got_from
-        self.i_url = i_url

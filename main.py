@@ -1,5 +1,5 @@
 import discord
-import router
+from router import router
 import commands.music
 import os
 
@@ -18,7 +18,7 @@ async def on_message(message: discord.message.Message):
     if message.author == client.user:
         return
     try:
-        func, args = router.router.find(message.content)
+        func, args = router.find(message.content)
         await func(args, message)
     except:
         pass

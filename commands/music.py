@@ -6,7 +6,7 @@ from player import player
 players: dict[str, player] = {}
 
 @router.command('!p')
-async def play(var, message: Message):
+async def play(var: str, message: Message):
     song_req, = var
     try:
         queue_item = players[message.guild.id].add_to_queue(song_req)
@@ -14,15 +14,14 @@ async def play(var, message: Message):
     except KeyError:
         voice_channel = message.author.voice
         
-        if voice_channel != None:
+        if voice_channel == None:
+            await message.channel.send(':rage: Unable to join VC :rage:')
+            return
+        else:
             vc = await voice_channel.channel.connect()
             if type(vc) == VoiceClient:
                 players[message.guild.id] = player(vc)
                 queue_item = players[message.guild.id].add_to_queue(song_req)
-        
-        else:
-            await message.channel.send(':rage: Unable to join VC :rage:')
-            return 
 
     if queue_item.print_url:
         await message.channel.send("🎶 " + queue_item.title + " was added to the queue.\n" + queue_item.url)
@@ -95,3 +94,14 @@ async def skip(var, message: Message):
 
     except KeyError:
         await message.channel.send("Not yet in a channel :sob:")
+
+@router.command("!duration")
+async def duration(var: str | None, message: Message):
+    try:
+        progress = players[message.guild.id].voice_channel.source.progress
+        duration = players[message.guild.id].voice_channel.source.duration
+
+        await message.channel.send(str(progress) + "s / " + str(duration) + "s")
+
+    except KeyError:
+        await message.channel.send("And error occured :x:")
