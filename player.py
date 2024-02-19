@@ -76,8 +76,7 @@ class player:
         self.current_queue.append(new_queue)
 
         return new_queue
-
-
+    
     """
     uses urllib to get the the html of a youtube search query. Basically the same as
     searching through a browser. Then uses regex to find the first youtube url (the first result)
