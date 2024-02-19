@@ -2,6 +2,8 @@ from discord.message import Message
 from discord import VoiceClient
 from router import router
 from player import player
+import random
+
 
 players: dict[str, player] = {}
 
@@ -15,7 +17,7 @@ async def play(var: str, message: Message):
         voice_channel = message.author.voice
         
         if voice_channel == None:
-            await message.channel.send(':rage: Unable to join VC :rage:')
+            await message.channel.send(':rage: Unable to join Voice Channel :rage:')
             return
         else:
             vc = await voice_channel.channel.connect()
@@ -95,6 +97,18 @@ async def skip(var, message: Message):
     except KeyError:
         await message.channel.send("Not yet in a channel :sob:")
 
+@router.command('!shuffle')
+async def shuffle(var, message: Message):
+    try:
+        if len(players[message.guild.id].current_queue) > 0:
+            song = players[message.guild.id].current_queue.pop(0)
+            random.shuffle(players[message.guild.id].current_queue)
+            players[message.guild.id].current_queue.insert(0, song)
+            await queue(var, message)
+            
+    except KeyError:
+        await message.channel.send("An error occured :x:")
+
 @router.command("!duration")
 async def duration(var: str | None, message: Message):
     try:
@@ -104,4 +118,4 @@ async def duration(var: str | None, message: Message):
         await message.channel.send(str(progress) + "s / " + str(duration) + "s")
 
     except KeyError:
-        await message.channel.send("And error occured :x:")
+        await message.channel.send("An error occured :x:")
