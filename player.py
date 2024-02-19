@@ -1,6 +1,5 @@
-from io import BufferedIOBase
 import re
-from typing import IO, Optional, Union
+from typing import IO
 import yt_dlp
 import discord
 import urllib

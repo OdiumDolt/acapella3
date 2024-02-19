@@ -1,6 +1,7 @@
 import discord
 from router import router
 import commands.music
+import commands.info
 import os
 
 
