@@ -81,21 +81,16 @@ async def resume(var, message: Message):
 
 @router.command("!s")
 async def skip(var, message: Message):
-    try:
-        index, = var
-        
-    except:
-        index = 0
-
-    try:
-        response = "Skipped ⏭️\n"
-        if len(players[message.guild.id].current_queue) - 1 > 0:
-            response += "🎶 NOW PLAYING: " + players[message.guild.id].current_queue[1].title
-        await message.channel.send(response)
-        players[message.guild.id].skip()
-
-    except KeyError:
-        await message.channel.send("Not yet in a channel :sob:")
+    current_player = await createPlayerIfNoneExists(message)
+    
+    response = "Skipped ⏭️\n"
+    
+    if len(current_player.current_queue) - 1 > 0:
+        response += "🎶 NOW PLAYING: " + current_player.current_queue[1].title
+    
+    await message.channel.send(response)
+    
+    current_player.skip()
 
 @router.command('!shuffle')
 async def shuffle(var, message: Message):
