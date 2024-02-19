@@ -44,6 +44,7 @@ class player:
         self.connected_guild = None
         self.is_playing = False
         self.last_play = None
+        self.dodgeMusicVideos = False
    
     """
     Uses yt_dlp to extract data from youtube, specificly the stream_url (i_url),
@@ -132,25 +133,3 @@ class player:
         ffmpeg_opts = {"before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5"}
         source = await AudioSourceTracked.from_probe(self.current_queue[0], **ffmpeg_opts)
         self.voice_channel.play(source, after= lambda e:asyncio.run_coroutine_threadsafe(self.play_next(), self.voice_channel.loop))
-
-
-    """"
-    creates a pyttsx3 engine object, and sythisizes the audio.
-    
-    it then saves the audio to a file, and plays that through discord.FFmpegOpudAudio.from_probe
-    
-    the after callback just deletes the created file (speach.mp3)
-    """
-    async def play_ai(self, message):
-        if self.is_playing:
-            return
-        
-        engine = pyttsx3.init()
-        engine.setProperty('rate', 133) 
-        engine.save_to_file(message.content, './' + str(message.guild.id) + '_speech.mp3')
-        engine.runAndWait()
-        
-        source = await discord.FFmpegOpusAudio.from_probe(str(message.guild.id) + '_speech.mp3')
-        self.voice_channel.play(source, after=lambda e: os.remove("./" + str(message.guild.id) + '_speech.mp3'))
-
-

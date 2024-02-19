@@ -1,4 +1,3 @@
 discord
 discord.py[voice]
-pyttsx3
 yt_dlp
