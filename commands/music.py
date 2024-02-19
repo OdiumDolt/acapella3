@@ -37,6 +37,12 @@ async def createPlayerIfNoneExists(message: Message) -> player:
 async def play(var: str, message: Message):
     song_req, = var
     current_player = await createPlayerIfNoneExists(message)
+    
+    
+    if "youtube.com/playlist" in song_req:
+        print('PLAYLIST DETECTED')
+        return
+
     queue_item = current_player.add_to_queue(song_req)
 
     if queue_item.print_url:

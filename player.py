@@ -4,8 +4,6 @@ import yt_dlp
 import discord
 import urllib
 import asyncio
-import pyttsx3
-import os
 import time
 
 class queue_item:
