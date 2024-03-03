@@ -76,6 +76,9 @@ class player:
 
         return new_queue
     
+    def addPlaylistToQueue(self, url):
+        self.getVideoUrlsFromPlaylist(url)
+
     """
     uses urllib to get the the html of a youtube search query. Basically the same as
     searching through a browser. Then uses regex to find the first youtube url (the first result)
@@ -91,6 +94,22 @@ class player:
         
         return url
 
+    def getVideoUrlsFromPlaylist(self, url):
+        html = urllib.request.urlopen(url)
+        html = html.read().decode()
+
+        with open('text.html', 'w', encoding='utf-8') as writefile : writefile.write(html)
+
+        video_ids = re.findall(r'watch\?v=[a-zA-Z0-9_-]{11}\\u\d+pp=.{1,15}",', html)
+        video_ids = re.findall(r'watch\?v=[a-zA-Z0-9_-]{11}', html)
+        playlistLength = int(re.findall(r'"runs":\s*\[{"text":"(\d+)"', html)[0])
+        if playlistLength > 100:
+            raise OverflowError
+        video_ids = video_ids[0:playlistLength]
+        for i in range(len(video_ids)):
+            video_ids[i] = "https://www.youtube.com/" + video_ids[i]
+
+        return video_ids
 
     """
     Checkes if a query is a youtube url. Thanks stackoverflow.
