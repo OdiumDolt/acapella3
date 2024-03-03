@@ -35,24 +35,29 @@ async def createPlayerIfNoneExists(message: Message) -> player:
 
 @router.command('!p')
 async def play(var: str, message: Message):
-    song_req, = var
+    url, = var
     current_player = await createPlayerIfNoneExists(message)
     
     
-    if "youtube.com/playlist" in song_req:
-        print('PLAYLIST DETECTED')
+    if "youtube.com/playlist" in url:
+        await current_player.addPlaylistToQueue(url)
         return
 
-    queue_item = current_player.add_to_queue(song_req)
+    queue_item = current_player.add_to_queue(url)
 
     if queue_item.print_url:
         await message.channel.send("🎶 " + queue_item.title + " was added to the queue.\n" + queue_item.url)
     else:
         await message.channel.send("🎶 " + queue_item.title + " was added to queue.")
     
-    if players[message.guild.id].is_playing == False:
-        await players[message.guild.id].play()
-    
+    if current_player.is_playing == False:
+        await current_player.play()
+
+@router.command("!play")
+async def exlusivePlay(var: str, message: Message):
+    current_player = await createPlayerIfNoneExists(message)
+    await current_player.play()
+
 @router.command("!q")
 async def queue(var, message: Message):
     current_player = await createPlayerIfNoneExists(message)
@@ -82,8 +87,8 @@ async def pause(var, message: Message):
 
 @router.command('!resume')
 async def resume(var, message: Message):
-        current_player = await createPlayerIfNoneExists(message)
-        current_player.voice_channel.resume()
+    current_player = await createPlayerIfNoneExists(message)
+    current_player.voice_channel.resume()
 
 @router.command("!s")
 async def skip(var, message: Message):
