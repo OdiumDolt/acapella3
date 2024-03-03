@@ -18,11 +18,9 @@ async def on_message(message: discord.message.Message):
     # check if the message is from the bot or not
     if message.author == client.user:
         return
-    try:
-        func, args = router.find(message.content)
-        await func(args, message)
-    except:
-        pass
+    
+    func, args = router.find(message.content)
+    await func(args, message)
         
 
 # start the Discord bot
